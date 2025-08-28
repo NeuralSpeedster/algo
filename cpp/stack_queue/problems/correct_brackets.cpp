@@ -30,7 +30,10 @@ int main() {
                 else if (top == '[') {
                     correct = ']';
                 }
-
+                else {
+                    cout<<"no";
+                    return 0;
+                }
                 if (c != correct) {
                     cout << "no";
                     return 0;
