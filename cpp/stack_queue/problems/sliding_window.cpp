@@ -2,13 +2,6 @@
 
 using namespace std;
 
-void printDq(const deque<int>& d) {
-    for (const auto& x : d) {
-        cout << x << " ";
-    }
-    cout << endl;
-}
-
 
 int main() {
     int n, k;
@@ -19,19 +12,20 @@ int main() {
     vector<int> result(n - k + 1, 0);
 
     for (int i = 0; i < n; i++) {
+        //  проверить, не выпал ли из окна минимум: если выпал, то его надо забрать из дека.
+        if (!dq.empty() && (i >= k) && dq.front() == arr.at(i-k)) {
+            dq.pop_front();
+        }
+
         while (!dq.empty() &&  dq.back() > arr[i]) {
             dq.pop_back();
         }
         dq.push_back(arr[i]);
 
-        printDq(dq);
-
-        if (i >= k - 1) {
+        if (!dq.empty() && i >= k - 1) {
             result[i - k + 1] = dq.front();
-            dq.pop_front();
         }
     }
-    cout<<"Final Result: "<<endl;
     for (const auto& x : result) {
         cout << x << "\n";
     }
