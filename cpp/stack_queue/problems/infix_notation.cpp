@@ -14,7 +14,7 @@ int evaluate_from_pn(const string &s) {
 }
 
 
-unordered_map<char,  unsigned short> OPERATIONS_PRIOR = {
+unordered_map<char, unsigned short> OPERATIONS_PRIOR = {
     {'+', 1},
     {'-', 1},
     {'*', 2},
@@ -33,13 +33,13 @@ string convert_to_prn(const string &s) {
         unsigned int j = 0;
         string operand;
         while (i + j < s.length() &&
-            isdigit(s.at(i+j))) {
+               isdigit(s.at(i + j))) {
             operand += s.at(i + j);
             j++;
         }
         if (j > 0) {
             i += j - 1;
-            cout<<operand<<" ";
+            cout << operand << " ";
             res += operand + " ";
             continue;
             /* цикл остановился либо в конце строки, либо на первом символе,
@@ -55,18 +55,30 @@ string convert_to_prn(const string &s) {
                 st.pop();
             }
             st.push(s.at(i));
-        }
-        else if (s.at(i) == '(') {
+        } else if (s.at(i) == '(') {
             st.push('(');
-        }
-        else if (s.at(i) == ')') {
+        } else if (s.at(i) == ')') { // закр скобка выталкивает в ответ все операции до закрывающей скобки и удаляет открывающую
             while (!st.empty() && is_operation(st.top())) {
-
+                res += st.top();
+                res += " ";
+                st.pop();
+            }
+            if (!st.empty() && st.top() == '(') {
+                st.pop();
+            } else { // не соответствуют скобки
+                IS_VALID_EXPRESSION = false;
             }
         }
-
+        else { // неизвестные символы
+            IS_VALID_EXPRESSION = false;
+        }
     }
-    cout<<"\nRes: "<<res<<"\n";
+    while (!st.empty()) {
+        res += st.top();
+        res += " ";
+        st.pop();
+    }
+    cout << "\nRes: " << res << "\n";
     return res;
 }
 
@@ -74,9 +86,15 @@ int main() {
     istream::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    string expression = " 12 + 456";
+    string expression = "1+a+1";
     //getline(cin, expression);
 
     string result_postfix = convert_to_prn(expression);
-    return evaluate_from_pn(result_postfix);
+    if (IS_VALID_EXPRESSION) {
+        cout<<evaluate_from_pn(result_postfix);
+    }
+    else {
+        cout<<"WRONG";
+    }
+    return 0;
 }
