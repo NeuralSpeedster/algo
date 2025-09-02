@@ -9,8 +9,23 @@ bool is_operation(char ch) {
     return ch == '+' || ch == '-' || ch == '*';
 }
 
-int evaluate_from_pn(const string &s) {
+int evaluate_from_prn(const string &s) {
     return 0;
+}
+
+
+string preprocess_expr(const string &s) {
+    string result;
+    if (!s.empty() && s[0] == '-') {
+        result = "0";
+    }
+    for (const auto &c : s) {
+        result += c;
+        if (c == '(') {
+            result += '0';
+        }
+    }
+    return result;
 }
 
 
@@ -23,6 +38,7 @@ unordered_map<char, unsigned short> OPERATIONS_PRIOR = {
 string convert_to_prn(const string &s) {
     stack<char> st;
     string res;
+    bool is_prev_operand = false;
 
     for (unsigned int i = 0; i < s.length(); i++) {
         if (s.at(i) == ' ') {
@@ -38,14 +54,20 @@ string convert_to_prn(const string &s) {
             j++;
         }
         if (j > 0) {
+            if (is_prev_operand) {
+                IS_VALID_EXPRESSION = false;
+                return "";
+            }
             i += j - 1;
             cout << operand << " ";
             res += operand + " ";
+            is_prev_operand = true;
             continue;
             /* цикл остановился либо в конце строки, либо на первом символе,
             не являющимся цифрой, тогда (инклюзивно) s[i, i+j] = operand
             */
         }
+        is_prev_operand = false;
 
         // Операция выталкивает из стека все операции с больше либо равным приоритетом и кладётся в стек
         if (is_operation(s.at(i))) {
@@ -67,10 +89,12 @@ string convert_to_prn(const string &s) {
                 st.pop();
             } else { // не соответствуют скобки
                 IS_VALID_EXPRESSION = false;
+                return "";
             }
         }
         else { // неизвестные символы
             IS_VALID_EXPRESSION = false;
+            return "";
         }
     }
     while (!st.empty()) {
@@ -86,12 +110,15 @@ int main() {
     istream::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    string expression = "1+a+1";
+    string expression = "-6 * (-8)";
     //getline(cin, expression);
 
-    string result_postfix = convert_to_prn(expression);
+    string processed_expr = preprocess_expr(expression);
+    cout<<processed_expr<<endl;
+    string result_postfix = convert_to_prn(processed_expr);
+
     if (IS_VALID_EXPRESSION) {
-        cout<<evaluate_from_pn(result_postfix);
+        cout<<evaluate_from_prn(result_postfix);
     }
     else {
         cout<<"WRONG";
