@@ -26,8 +26,8 @@ int evaluate_from_prn(const string &s) {
         }
         if (is_operation(s[i])) {
             if (st.size() < 2) {
-                cout << "WRONG";
-                return -1;
+                IS_VALID_EXPRESSION = false;
+                return 0;
             }
             int second = st.top();
             st.pop();
@@ -52,16 +52,30 @@ int evaluate_from_prn(const string &s) {
     if (st.size() == 1) {
         return st.top();
     }
-    return -1;
+
+    IS_VALID_EXPRESSION = false;
+    return 0;
 }
 
 
 string preprocess_expr(const string &s) {
-    string result;
-    if (!s.empty() && s[0] == '-') {
-        result = "0";
-    }
+    string result = "0";
+    bool is_prev_operation = false;
+
     for (const auto &c: s) {
+        if (c == ' ') {
+            continue;
+        }
+        if (is_operation(c)) {
+            if (is_prev_operation) {
+                IS_VALID_EXPRESSION = false;
+                return "";
+            }
+            is_prev_operation = true;
+        }
+        else {
+            is_prev_operation = false;
+        }
         result += c;
         if (c == '(') {
             result += '0';
