@@ -2,7 +2,7 @@
 
 using namespace std;
 
-
+// TODO: переписать запрос суммы на префиксные суммы, чтобы работал за O(1)
 int main() {
     istream::sync_with_stdio(false);
     cin.tie(nullptr);
