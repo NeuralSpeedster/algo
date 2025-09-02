@@ -10,7 +10,49 @@ bool is_operation(char ch) {
 }
 
 int evaluate_from_prn(const string &s) {
-    return 0;
+    stack<int> st;
+    for (unsigned int i = 0; i < s.length(); i++) {
+        unsigned int j = 0;
+        string operand;
+        while (i + j < s.length() &&
+               isdigit(s.at(i + j))) {
+            operand += s.at(i + j);
+            j++;
+        }
+        if (j > 0) {
+            i += j - 1;
+            st.push(stoi(operand));
+            continue;
+        }
+        if (is_operation(s[i])) {
+            if (st.size() < 2) {
+                cout << "WRONG";
+                return -1;
+            }
+            int second = st.top();
+            st.pop();
+            int first = st.top();
+            st.pop();
+
+            switch (s[i]) {
+                case '+':
+                    st.push(first + second);
+                    break;
+                case '-':
+                    st.push(first - second);
+                    break;
+                case '*':
+                    st.push(first * second);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    if (st.size() == 1) {
+        return st.top();
+    }
+    return -1;
 }
 
 
@@ -19,7 +61,7 @@ string preprocess_expr(const string &s) {
     if (!s.empty() && s[0] == '-') {
         result = "0";
     }
-    for (const auto &c : s) {
+    for (const auto &c: s) {
         result += c;
         if (c == '(') {
             result += '0';
@@ -59,7 +101,6 @@ string convert_to_prn(const string &s) {
                 return "";
             }
             i += j - 1;
-            cout << operand << " ";
             res += operand + " ";
             is_prev_operand = true;
             continue;
@@ -79,7 +120,8 @@ string convert_to_prn(const string &s) {
             st.push(s.at(i));
         } else if (s.at(i) == '(') {
             st.push('(');
-        } else if (s.at(i) == ')') { // закр скобка выталкивает в ответ все операции до закрывающей скобки и удаляет открывающую
+        } else if (s.at(i) == ')') {
+            // закр скобка выталкивает в ответ все операции до закрывающей скобки и удаляет открывающую
             while (!st.empty() && is_operation(st.top())) {
                 res += st.top();
                 res += " ";
@@ -87,12 +129,13 @@ string convert_to_prn(const string &s) {
             }
             if (!st.empty() && st.top() == '(') {
                 st.pop();
-            } else { // не соответствуют скобки
+            } else {
+                // не соответствуют скобки
                 IS_VALID_EXPRESSION = false;
                 return "";
             }
-        }
-        else { // неизвестные символы
+        } else {
+            // неизвестные символы
             IS_VALID_EXPRESSION = false;
             return "";
         }
@@ -102,7 +145,6 @@ string convert_to_prn(const string &s) {
         res += " ";
         st.pop();
     }
-    cout << "\nRes: " << res << "\n";
     return res;
 }
 
@@ -110,18 +152,16 @@ int main() {
     istream::sync_with_stdio(false);
     cin.tie(nullptr);
 
-    string expression = "-6 * (-8)";
-    //getline(cin, expression);
+    string expression;
+    getline(cin, expression);
 
     string processed_expr = preprocess_expr(expression);
-    cout<<processed_expr<<endl;
     string result_postfix = convert_to_prn(processed_expr);
 
     if (IS_VALID_EXPRESSION) {
-        cout<<evaluate_from_prn(result_postfix);
-    }
-    else {
-        cout<<"WRONG";
+        cout << evaluate_from_prn(result_postfix);
+    } else {
+        cout << "WRONG";
     }
     return 0;
 }
