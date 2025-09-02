@@ -2,15 +2,22 @@
 
 using namespace std;
 
+
+bool IS_VALID_EXPRESSION = true;
+
+bool is_operation(char ch) {
+    return ch == '+' || ch == '-' || ch == '*';
+}
+
 int evaluate_from_pn(const string &s) {
     return 0;
 }
+
 
 unordered_map<char,  unsigned short> OPERATIONS_PRIOR = {
     {'+', 1},
     {'-', 1},
     {'*', 2},
-    //{'(', 0},
 };
 
 string convert_to_prn(const string &s) {
@@ -33,14 +40,30 @@ string convert_to_prn(const string &s) {
         if (j > 0) {
             i += j - 1;
             cout<<operand<<" ";
-            res.append(operand + " ");
+            res += operand + " ";
             continue;
             /* цикл остановился либо в конце строки, либо на первом символе,
             не являющимся цифрой, тогда (инклюзивно) s[i, i+j] = operand
             */
         }
 
-        //
+        // Операция выталкивает из стека все операции с больше либо равным приоритетом и кладётся в стек
+        if (is_operation(s.at(i))) {
+            while (!st.empty() && OPERATIONS_PRIOR[s.at(i)] <= OPERATIONS_PRIOR[st.top()]) {
+                res += st.top();
+                res += " ";
+                st.pop();
+            }
+            st.push(s.at(i));
+        }
+        else if (s.at(i) == '(') {
+            st.push('(');
+        }
+        else if (s.at(i) == ')') {
+            while (!st.empty() && is_operation(st.top())) {
+
+            }
+        }
 
     }
     cout<<"\nRes: "<<res<<"\n";
