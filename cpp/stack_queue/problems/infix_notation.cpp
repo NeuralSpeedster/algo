@@ -59,11 +59,26 @@ int evaluate_from_prn(const string &s) {
 
 
 string preprocess_expr(const string &s) {
-    string result = "0";
-    bool is_prev_operation = false;
 
+    string result;
+    size_t first_non_space = s.find_first_not_of(' ');
+    if (first_non_space != string::npos) {
+        if (s.at(first_non_space) == '-') {
+            result = "0";
+        }
+        else {
+            result = "";
+        }
+    }
+
+    bool is_prev_operation = false;
+    bool is_prev_opening_bracket = (s.at(first_non_space) == '(');
+
+    size_t pos = 0;
     for (const auto &c: s) {
         if (c == ' ') {
+            result += c;
+            ++pos;
             continue;
         }
         if (is_operation(c)) {
@@ -78,8 +93,25 @@ string preprocess_expr(const string &s) {
         }
         result += c;
         if (c == '(') {
-            result += '0';
+            size_t counter = 1;
+            while (pos + counter < s.length() && isspace(s[pos + counter])) {
+                counter++;
+            }
+            if (pos + counter < s.length() && s[pos + counter] != '(') {
+                result += '0';
+            }
+
+            is_prev_opening_bracket = true;
         }
+        else if (c == ')') {
+            if (is_prev_opening_bracket) {
+                IS_VALID_EXPRESSION = false;
+                return "";
+            }
+        } else {
+            is_prev_opening_bracket = false;
+        }
+        ++pos;
     }
     return result;
 }
@@ -155,9 +187,16 @@ string convert_to_prn(const string &s) {
         }
     }
     while (!st.empty()) {
-        res += st.top();
-        res += " ";
-        st.pop();
+        char tp = st.top();
+        if (is_operation(tp)) {
+            res += tp;
+            res += " ";
+            st.pop();
+        }
+        else {
+            IS_VALID_EXPRESSION = false;
+            return "";
+        }
     }
     return res;
 }
@@ -167,15 +206,19 @@ int main() {
     cin.tie(nullptr);
 
     string expression;
-    getline(cin, expression);
-
+    expression = "( - ( 2 + 3 ) )";
+    //getline(cin, expression);
     string processed_expr = preprocess_expr(expression);
+    cout<< processed_expr<<endl;;
+    //cout<<processed_expr<<endl;
     string result_postfix = convert_to_prn(processed_expr);
+    int result = evaluate_from_prn(result_postfix);
 
     if (IS_VALID_EXPRESSION) {
-        cout << evaluate_from_prn(result_postfix);
+        cout << result << endl;
     } else {
         cout << "WRONG";
     }
     return 0;
 }
+
