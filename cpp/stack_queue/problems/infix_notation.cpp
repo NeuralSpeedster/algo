@@ -69,6 +69,9 @@ string preprocess_expr(const string &s) {
         else {
             result = "";
         }
+    } else {
+        IS_VALID_EXPRESSION = false;
+        return "";
     }
 
     bool is_prev_operation = false;
@@ -97,7 +100,7 @@ string preprocess_expr(const string &s) {
             while (pos + counter < s.length() && isspace(s[pos + counter])) {
                 counter++;
             }
-            if (pos + counter < s.length() && s[pos + counter] != '(') {
+            if (pos + counter < s.length() && s[pos + counter] == '-') {
                 result += '0';
             }
 
@@ -206,10 +209,10 @@ int main() {
     cin.tie(nullptr);
 
     string expression;
-    expression = "( - ( 2 + 3 ) )";
-    //getline(cin, expression);
+    //expression = "(-32)";
+    getline(cin, expression);
     string processed_expr = preprocess_expr(expression);
-    cout<< processed_expr<<endl;;
+    //cout<< processed_expr<<endl;;
     //cout<<processed_expr<<endl;
     string result_postfix = convert_to_prn(processed_expr);
     int result = evaluate_from_prn(result_postfix);
