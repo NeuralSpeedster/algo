@@ -2,7 +2,6 @@
 
 using namespace std;
 
-// TODO: переписать запрос суммы на префиксные суммы, чтобы работал за O(1)
 int main() {
     istream::sync_with_stdio(false);
     cin.tie(nullptr);
@@ -10,28 +9,40 @@ int main() {
     unsigned int n;
     cin >> n;
     cin.ignore();
-    deque<unsigned int> dq;
-    for (size_t i = 0; i < n; i++) {
+    stack<unsigned int> st;
+    vector<long long> prefix_sums(n+1); // оставим prefix_sums[0] == 0;
+
+    unsigned int j = 1;
+    for (unsigned int i = 0; i < n; i++) {
         string operation;
         getline(cin, operation);
         if (operation.empty()) {
             continue;
         }
+
         if (operation[0] == '+') {
             auto raw_value = operation.substr(1);
             unsigned int value = stoi(raw_value);
-            dq.push_back(value);
-        } else if (operation[0] == '-') {
-            cout << dq.back() << "\n";
-            dq.pop_back();
+            st.push(value);
+            prefix_sums[j] = prefix_sums[j - 1] + value;
+            j++;
+
+        } else if (operation[0] == '-' && !st.empty()) {
+            auto deleted = st.top();
+            prefix_sums[j-1] = 0;
+            j--;
+            cout << deleted << "\n";
+            st.pop();
+
         } else if (operation[0] == '?') {
             auto raw_value = operation.substr(1);
             int k = stoi(raw_value);
-            long long sum = 0;
-            for (auto it = dq.rbegin(); it != dq.rend() && k > 0; ++it, --k) {
-                sum += *it;
+            unsigned int s = st.size();
+            if (s < k) {
+                throw out_of_range("K is more than stack.size()");
             }
-            cout << sum << "\n";
+            long long ans = prefix_sums[s] - prefix_sums[s - k];
+            cout << ans << "\n";
         }
     }
     return 0;
