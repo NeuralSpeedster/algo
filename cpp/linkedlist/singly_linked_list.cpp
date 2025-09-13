@@ -15,7 +15,6 @@
 Доступ к случайному элементу: O(n)
 */
 
-
 template<typename T>
 class SinglyLinkedList {
 private:
@@ -125,6 +124,5 @@ int main() {
     std::cout << list.get_size() << std::endl;
 
     std::cout<<list.get_val(5)<<std::endl;
-
     return 0;
 }
