@@ -60,7 +60,7 @@ public:
         size--;
     }
 
-    T &front() {
+    [[nodiscard]] T &front() const {
         if (!head) {
             throw std::out_of_range("list is empty");
         }
@@ -110,23 +110,27 @@ public:
     void push(T value) {
         eternal_list.push_front(value); // O(1)
     }
+
     void pop() {
         eternal_list.pop_front();
     }
+
     [[nodiscard]] T back() const {
         return eternal_list.front();
     }
+
     [[nodiscard]] size_t size() const {
-        return eternal_list.size();
+        return eternal_list.get_size();
     }
+
     void clear() {
-        while (eternal_list.size()) {
+        while (eternal_list.get_size()) {
             eternal_list.pop_front();
         }
     }
 };
 
-int parse_int(std::string& str) {
+int parse_int(const std::string &str) {
     auto pos = str.find_first_not_of("push ");
     if (pos != std::string::npos) {
         auto value = str.substr(pos);
@@ -136,7 +140,6 @@ int parse_int(std::string& str) {
 }
 
 
-
 int main() {
     MyStack<int> st;
     std::string input;
@@ -144,8 +147,31 @@ int main() {
         getline(std::cin, input);
 
         if (input == "exit") {
-            std::cout << "bye"  << std::endl;
+            std::cout << "bye" << std::endl;
             return 0;
+        }
+        if (input.find("push") != std::string::npos) {
+            int value = parse_int(input);
+            st.push(value);
+            std::cout << "ok" << std::endl;
+        } else if (input == "pop") {
+            if (st.size() != 0) {
+                std::cout << st.back() << std::endl;
+                st.pop();
+            } else {
+                std::cout << "error" << std::endl;
+            }
+        } else if (input == "size") {
+            std::cout << st.size() << std::endl;
+        } else if (input == "clear") {
+            st.clear();
+            std::cout << "ok" << std::endl;
+        } else if (input == "back") {
+            if (st.size() != 0) {
+                std::cout << st.back() << std::endl;
+            } else {
+                std::cout << "error" << std::endl;
+            }
         }
     }
 }
