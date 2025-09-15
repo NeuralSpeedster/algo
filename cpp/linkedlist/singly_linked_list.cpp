@@ -86,7 +86,7 @@ public:
         }
         std::cout << std::endl;
     }
-    T& get_val(size_t index) {
+    T& get_val_at(size_t index) {
         if (index >= size) {
             throw std::out_of_range("Index out of bounds");
         }
@@ -123,6 +123,6 @@ int main() {
     std::cout << list.back() << std::endl;
     std::cout << list.get_size() << std::endl;
 
-    std::cout<<list.get_val(5)<<std::endl;
+    std::cout<<list.get_val_at(5)<<std::endl;
     return 0;
 }
