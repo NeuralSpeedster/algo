@@ -59,7 +59,7 @@ class SinglyLinkedList:
 
         new_node = SingleListNode(value)
         current = self.__head
-        for _ in range(index):
+        for _ in range(index-1):
             current = current.next
 
         new_node.next = current.next
@@ -79,4 +79,20 @@ class SinglyLinkedList:
 
         current.next = current.next.next
         self.__size -= 1
+
+
+    def head(self):
+        if not self.__head:
+            raise IndexError("Обращение к пустому списку")
+
+        return self.__head.value
+
+    def tail(self):
+        if not self.__tail:
+            raise IndexError("Обращение к пустому списку")
+        return self.__tail.value
+
+    @property
+    def size(self):
+        return self.__size
 
